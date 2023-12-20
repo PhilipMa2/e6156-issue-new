@@ -18,7 +18,7 @@ class Report(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     issue = db.Column(db.String)
     description = db.Column(db.String)
-    student_id = db.Column(db.Integer)
+    student_id = db.Column(db.VARCHAR(200))
 
 # Ensure the table exists
 with app.app_context():
