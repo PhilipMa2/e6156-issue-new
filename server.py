@@ -26,9 +26,9 @@ with app.app_context():
 
 # Request Parsing
 parser = reqparse.RequestParser()
-parser.add_argument('issue', type=str, required=True, help='Issue cannot be blank')
-parser.add_argument('description', type=str, required=True, help='Description cannot be blank')
-parser.add_argument('student_id', type=int, required=True, help='Student ID is required')
+parser.add_argument('issue', type=str)
+parser.add_argument('description', type=str)
+parser.add_argument('student_id', type=int)
 
 # API Resource Classes
 class ReportResource(Resource):
