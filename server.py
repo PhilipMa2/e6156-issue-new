@@ -28,7 +28,7 @@ with app.app_context():
 parser = reqparse.RequestParser()
 parser.add_argument('issue', type=str)
 parser.add_argument('description', type=str)
-parser.add_argument('student_id', type=int)
+parser.add_argument('student_id', type=str)
 
 # API Resource Classes
 class ReportResource(Resource):
