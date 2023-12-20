@@ -6,7 +6,7 @@ import requests
 app = Flask(__name__)
 
 # Database Configuration using SQLAlchemy
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:ZLY0802kk.@35.193.93.151/postgres'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:ZLY0802kk.@35.192.175.94/postgres'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 api = Api(app)
@@ -14,10 +14,11 @@ db = SQLAlchemy(app)
 
 # Database Model
 class Report(db.Model):
-    __tablename__ = 'reports'
+    __tablename__ = 'issue_reports'
     id = db.Column(db.Integer, primary_key=True)
     issue = db.Column(db.String)
     description = db.Column(db.String)
+    student_id = db.Column(db.Integer)
 
 # Ensure the table exists
 with app.app_context():
@@ -27,6 +28,7 @@ with app.app_context():
 parser = reqparse.RequestParser()
 parser.add_argument('issue', type=str, required=True, help='Issue cannot be blank')
 parser.add_argument('description', type=str, required=True, help='Description cannot be blank')
+parser.add_argument('student_id', type=int, required=True, help='Student ID is required')
 
 # API Resource Classes
 class ReportResource(Resource):
@@ -37,22 +39,27 @@ class ReportResource(Resource):
         return {'message': 'Report not found'}, 404
 
     def delete(self, report_id):
+        args = parser.parse_args()
         report = Report.query.get(report_id)
-        if report:
+
+        if report and report.student_id == args['student_id']:
             db.session.delete(report)
             db.session.commit()
             return {'message': 'Report deleted'}
-        return {'message': 'Report not found'}, 404
+        else:
+            return {'message' : "Unauthorized to update this report"}, 403
 
     def put(self, report_id):
         args = parser.parse_args()
         report = Report.query.get(report_id)
-        if report:
+
+        if report and report.student_id == args['student_id']:
             report.issue = args['issue']
             report.description = args['description']
             db.session.commit()
             return {'message': 'Report updated'}
-        return {'message': 'Report not found'}, 404
+        else:
+            return {'message' : "Unauthorized to update this report"}, 403
 
 class ReportsResource(Resource):
     def get(self):
@@ -61,7 +68,7 @@ class ReportsResource(Resource):
 
     def post(self):
         args = parser.parse_args()
-        new_report = Report(issue=args['issue'], description=args['description'])
+        new_report = Report(issue=args['issue'], description=args['description'], student_id=args['student_id'])
         db.session.add(new_report)
         db.session.commit()
 
@@ -84,4 +91,4 @@ api.add_resource(ReportsResource, '/reports')
 
 # App Initialization
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=True)
