@@ -28,7 +28,7 @@ def test_update_report(report_id, student_id):
 
 def test_delete_report(report_id, student_id):
     print("\nTesting: Delete Report")
-    response = requests.delete(f"{BASE_URL}/reports/{report_id}", json={"student_id": student_id})
+    response = requests.delete(f"{BASE_URL}/reports/{report_id}", json={"issue": "", "description": "", "student_id": student_id})
     print("Status Code:", response.status_code)
     print("Response:", response.json())
 
